@@ -1,6 +1,6 @@
 # color_setter
 
-A new Flutter project.
+My first Flutter project. It drives the lighting in the living room that I've made using ESP.
 
 ## Getting Started
 
