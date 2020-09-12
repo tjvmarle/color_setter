@@ -2,30 +2,23 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 
 class ColorSlider extends StatefulWidget {
-  Color lowerGradient;
-  Color upperGradient;
+  final Color lowerGradient;
+  final Color upperGradient;
 
-  ColorSlider(Color lowerColor, Color upperColor) {
-    lowerGradient = lowerColor;
-    upperGradient = upperColor;
-  };
+  ColorSlider(this.lowerGradient, this.upperGradient);
 
   @override
   State<StatefulWidget> createState() {
-    return _SliderState(lowerGradient, upperGradient);
+    return _SliderState();
   }
 }
 
 class _SliderState extends State<ColorSlider> {
-  Color lowerGradient;
-  Color upperGradient;
-  double sliderHeight;
+  //Sla hier variabelen op die bij mutaties onthouden moeten worden
+  double sliderHeight; //Deze is in principe constant
   double sliderValue;
 
-  _SliderState(Color lower, Color upper) {
-    lowerGradient = lower;
-    upperGradient = upper;
-  }
+  _SliderState();
 
   void initState() {
     sliderHeight = 36;
@@ -33,7 +26,12 @@ class _SliderState extends State<ColorSlider> {
     super.initState();
   }
 
+  double getVal() {
+    return sliderValue;
+  }
+
   @override
+  //Hier wordt de gehele widget gemaakt en teruggeven aan de bovenlaag
   Widget build(BuildContext context) {
     return FractionallySizedBox(
       widthFactor: 0.9,

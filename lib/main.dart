@@ -1,11 +1,10 @@
 // import 'dart:ffi';
 
-import 'package:color_setter/ColorIntSlider.dart';
 import 'package:flutter/material.dart';
 import 'package:./flutter_circle_color_picker/flutter_circle_color_picker.dart';
 import 'package:http/http.dart';
 import 'package:wakelock/wakelock.dart';
-// import 'ColorIntSlider.dart';
+import 'package:color_setter/ColorIntSlider.dart';
 
 void main() {
   runApp(MyApp());
@@ -65,8 +64,6 @@ class _MyHomePageState extends State<MyHomePage> {
   Color witIntMinClr;
 
   double sliderHeight;
-
-  ColorSlider clrSlider(sliderHeight)
 
   @override
   void initState() {
@@ -143,6 +140,11 @@ class _MyHomePageState extends State<MyHomePage> {
 // * Algehele intensiteit
 // * Presets: Warm wit, helder wit --> buttons? Iig eentje voor warm wit
 
+  Color lowerGradient1;
+  Color upperGradient1;
+  double sliderHeight1;
+  double sliderValue1;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -160,12 +162,7 @@ class _MyHomePageState extends State<MyHomePage> {
               onChanged: setColor,
               strokeWidth: 5,
             ),
-            
-            ColorSlider( 
-              lowerGradient: Colors.yellow,
-              upperGradient: Colors.pink,
-            ),
-
+            ColorSlider(Colors.purple, Colors.pink), //????
             FractionallySizedBox(
               widthFactor: 0.9,
               child: Container(
