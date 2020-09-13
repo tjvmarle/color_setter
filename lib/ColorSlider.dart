@@ -2,10 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 
 class ColorSlider extends StatefulWidget {
+  final double sliderHeight;
   final Color lowerGradient;
   final Color upperGradient;
+  final Function sliderCb;
 
-  ColorSlider(this.lowerGradient, this.upperGradient);
+  ColorSlider(
+      this.sliderHeight, this.lowerGradient, this.upperGradient, this.sliderCb);
 
   @override
   State<StatefulWidget> createState() {
@@ -14,14 +17,11 @@ class ColorSlider extends StatefulWidget {
 }
 
 class _SliderState extends State<ColorSlider> {
-  //Sla hier variabelen op die bij mutaties onthouden moeten worden
-  double sliderHeight; //Deze is in principe constant
   double sliderValue;
 
   _SliderState();
 
   void initState() {
-    sliderHeight = 36;
     sliderValue = 0.5;
     super.initState();
   }
@@ -37,11 +37,13 @@ class _SliderState extends State<ColorSlider> {
       widthFactor: 0.9,
       child: Container(
         constraints: BoxConstraints.expand(
-          height: sliderHeight,
+          height: widget.sliderHeight,
         ),
         decoration: new BoxDecoration(
-          borderRadius: new BorderRadius.all(Radius.circular(sliderHeight / 2)),
-          gradient: LinearGradient(colors: [lowerGradient, upperGradient]),
+          borderRadius:
+              new BorderRadius.all(Radius.circular(widget.sliderHeight / 2)),
+          gradient: LinearGradient(
+              colors: [widget.lowerGradient, widget.upperGradient]),
           border: Border.all(
             width: 2,
             color: Colors.black.withOpacity(0.5),
@@ -63,6 +65,7 @@ class _SliderState extends State<ColorSlider> {
             value: sliderValue,
             onChanged: (value) {
               sliderValue = value;
+              widget.sliderCb(value);
             },
           ),
         ),

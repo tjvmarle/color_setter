@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:./flutter_circle_color_picker/flutter_circle_color_picker.dart';
 import 'package:http/http.dart';
 import 'package:wakelock/wakelock.dart';
-import 'package:color_setter/ColorIntSlider.dart';
+import 'package:color_setter/ColorSlider.dart';
 
 void main() {
   runApp(MyApp());
@@ -68,10 +68,14 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   void initState() {
     clr = Colors.orange; //Ring kleur
-    clrInt = 1; //Algehele intensiteit
+    clrInt = 1; //Kleur intensiteit
     witInt = 0.5; //Wit intensiteit - 50%
     totalInt = 50; //Algehele intensiteit
     witIntMinClr = clr;
+
+    clrIntensity = 0.5;
+    whiteIntensity = 0.5;
+    finalClrIntensity = 1;
 
     sliderHeight = 36;
     Wakelock.enable();
@@ -84,23 +88,30 @@ class _MyHomePageState extends State<MyHomePage> {
     });
   }
 
-  void setColorInt(Color kleur) {
-    setState(() {
-      clr = kleur;
-    });
-  }
+  // void setColorInt(Color kleur) {
+  //   setState(() {
+  //     clr = kleur;
+  //   });
+  // }
 
-  void setWitInt(Color kleur) {
-    setState(() {
-      clr = kleur;
-    });
-  }
+  // void setWitInt(Color kleur) {
+  //   setState(() {
+  //     clr = kleur;
+  //   });
+  // }
 
   //Lower end is gekozen kleur bij hoge verzadiging en zwart bij lage.
-  Color getLowerWitInt() {
-    double red = clr.red * clrInt;
-    double green = clr.green * clrInt;
-    double blue = clr.blue * clrInt;
+  // Color getLowerWit() {
+  //   double red = clr.red * clrInt;
+  //   double green = clr.green * clrInt;
+  //   double blue = clr.blue * clrInt;
+  //   return Color.fromRGBO(red.toInt(), green.toInt(), blue.toInt(), 1);
+  // }
+
+  Color getLowerWitInt(double intensity) {
+    double red = clr.red * intensity;
+    double green = clr.green * intensity;
+    double blue = clr.blue * intensity;
     return Color.fromRGBO(red.toInt(), green.toInt(), blue.toInt(), 1);
   }
 
@@ -110,15 +121,36 @@ class _MyHomePageState extends State<MyHomePage> {
   //Aandeel wit voor de kleur van de bovengrens behoudt een minimale waarde,
   //anders is niet goed zichtbaar dat wit een aandeel heeft bij hoge
   //kleurverzadigingen.
-  Color getUpperWitInt() {
-    double fractInt = fract * clrInt;
+  // Color getUpperWit() {
+  //   double fractInt = fract * clrInt;
+  //   double red = 255 * (1 - fractInt) + fractInt * clr.red;
+  //   double green = 255 * (1 - fractInt) + fractInt * clr.green;
+  //   double blue = 255 * (1 - fractInt) + fractInt * clr.blue;
+  //   return Color.fromRGBO(red.toInt(), green.toInt(), blue.toInt(), 1);
+  // }
+
+  Color getUpperWitInt(double intensity) {
+    double fractInt = fract * intensity;
     double red = 255 * (1 - fractInt) + fractInt * clr.red;
     double green = 255 * (1 - fractInt) + fractInt * clr.green;
     double blue = 255 * (1 - fractInt) + fractInt * clr.blue;
     return Color.fromRGBO(red.toInt(), green.toInt(), blue.toInt(), 1);
   }
 
-  Color getUpperAlgeheel() {
+  // Color getUpperAlgeheel() {
+  //   //Normaliseer de intensiteiten voor kleur en wit.
+  //   double fractClrInt = 1 - (1 - fract) * witInt;
+  //   double fractClrWit = 1 - fract * clrInt;
+
+  //   double red = clr.red * fractClrInt * clrInt + 255 * fractClrWit * witInt;
+  //   double green =
+  //       clr.green * fractClrInt * clrInt + 255 * fractClrWit * witInt;
+  //   double blue = clr.blue * fractClrInt * clrInt + 255 * fractClrWit * witInt;
+
+  //   return Color.fromRGBO(red.toInt(), green.toInt(), blue.toInt(), 1);
+  // }
+
+  Color getUpperAlgeheelInt(double clrInt, double witInt) {
     //Normaliseer de intensiteiten voor kleur en wit.
     double fractClrInt = 1 - (1 - fract) * witInt;
     double fractClrWit = 1 - fract * clrInt;
@@ -131,6 +163,8 @@ class _MyHomePageState extends State<MyHomePage> {
     return Color.fromRGBO(red.toInt(), green.toInt(), blue.toInt(), 1);
   }
 
+  ColorSlider sliderInt; //(sliderHeight, Colors.grey, Colors.orange);
+
 //To do
 //Wat extra berekeningen toevoegen om de juiste wit-varianten te krijgen bij het
 // sliden en deze te kunnen gebruiken bij invullen van de andere sliders.
@@ -139,11 +173,9 @@ class _MyHomePageState extends State<MyHomePage> {
 // * Hoeveelheid wit licht
 // * Algehele intensiteit
 // * Presets: Warm wit, helder wit --> buttons? Iig eentje voor warm wit
-
-  Color lowerGradient1;
-  Color upperGradient1;
-  double sliderHeight1;
-  double sliderValue1;
+  double clrIntensity;
+  double whiteIntensity;
+  double finalClrIntensity;
 
   @override
   Widget build(BuildContext context) {
@@ -162,138 +194,26 @@ class _MyHomePageState extends State<MyHomePage> {
               onChanged: setColor,
               strokeWidth: 5,
             ),
-            ColorSlider(Colors.purple, Colors.pink), //????
-            FractionallySizedBox(
-              widthFactor: 0.9,
-              child: Container(
-                constraints: BoxConstraints.expand(
-                  height: sliderHeight,
-                ),
-                decoration: new BoxDecoration(
-                  borderRadius:
-                      new BorderRadius.all(Radius.circular(sliderHeight / 2)),
-                  gradient: LinearGradient(
-                      colors: [Colors.grey[500].withOpacity(0), clr]),
-                  // color: clr,
-                  border: Border.all(
-                    width: 2,
-                    color: Colors.black.withOpacity(0.5),
-                  ),
-                ),
-                child: SliderTheme(
-                  data: SliderThemeData(
-                    activeTrackColor: Colors.grey[400],
-                    inactiveTrackColor: Colors.grey[400],
-                    trackHeight: 4.0,
-                    thumbColor: Colors.grey[700],
-                    thumbShape: RoundSliderThumbShape(enabledThumbRadius: 12.0),
-                    overlayShape: RoundSliderOverlayShape(overlayRadius: 28.0),
-                    overlayColor: clr.withAlpha(51),
-                  ),
-                  child: Slider(
-                    label: "Kleur intensiteit",
-                    min: 0.0,
-                    max: 1.0,
-                    value: clrInt,
-                    onChanged: (value) {
-                      setState(() {
-                        clrInt = value;
-                        witIntMinClr = Color.fromRGBO(
-                            (clr.red * clrInt).round(),
-                            (clr.green * clrInt).round(),
-                            (clr.blue * clrInt).round(),
-                            1);
-                      });
-                    },
-                  ),
-                ),
-              ),
-            ),
-            FractionallySizedBox(
-              widthFactor: 0.9,
-              child: Container(
-                constraints: BoxConstraints.expand(
-                  height: sliderHeight,
-                ),
-                decoration: new BoxDecoration(
-                  borderRadius:
-                      new BorderRadius.all(Radius.circular(sliderHeight / 2)),
-                  gradient: LinearGradient(
-                      colors: [getLowerWitInt(), getUpperWitInt()]),
-                  // color: clr,
-                  border: Border.all(
-                    width: 2,
-                    color: Colors.black.withOpacity(0.5),
-                  ),
-                ),
-                child: SliderTheme(
-                  data: SliderThemeData(
-                    activeTrackColor: Colors.grey[400],
-                    inactiveTrackColor: Colors.grey[400],
-                    trackHeight: 4.0,
-                    thumbColor: Colors.grey[700],
-                    thumbShape: RoundSliderThumbShape(enabledThumbRadius: 12.0),
-                    overlayShape: RoundSliderOverlayShape(overlayRadius: 28.0),
-                    overlayColor: clr.withAlpha(51),
-                  ),
-                  child: Slider(
-                    label: "Wit licht",
-                    min: 0,
-                    max: 1,
-                    value: witInt,
-                    onChanged: (value) {
-                      setState(() {
-                        witInt = value;
-                      });
-                    },
-                  ),
-                ),
-              ),
-            ),
-            FractionallySizedBox(
-              widthFactor: 0.9,
-              child: Container(
-                constraints: BoxConstraints.expand(
-                  height: sliderHeight,
-                ),
-                decoration: new BoxDecoration(
-                  borderRadius:
-                      new BorderRadius.all(Radius.circular(sliderHeight / 2)),
-                  gradient: LinearGradient(
-                      colors: [Colors.grey[400], getUpperAlgeheel()]),
-                  color: clr,
-                  border: Border.all(
-                    width: 2,
-                    color: Colors.black.withOpacity(0.5),
-                  ),
-                ),
-                child: SliderTheme(
-                  data: SliderThemeData(
-                    activeTrackColor: Colors.grey[400],
-                    inactiveTrackColor: Colors.grey[400],
-                    trackHeight: 4.0,
-                    thumbColor: Colors.grey[700],
-                    thumbShape: RoundSliderThumbShape(enabledThumbRadius: 12.0),
-                    overlayShape: RoundSliderOverlayShape(overlayRadius: 28.0),
-                    overlayColor: clr.withAlpha(51),
-                  ),
-                  child: Slider(
-                    label: "Algehele intensiteit",
-                    min: 0,
-                    max: 100,
-                    value: totalInt,
-                    onChanged: (value) {
-                      setState(() {
-                        totalInt = value;
-                      });
-                    },
-                  ),
-                ),
-              ),
-            ),
-            ColorSlider(
-              sliderHeight,
-            ),
+
+            //Color intensity slider
+            ColorSlider(sliderHeight, clr.withOpacity(0), clr,
+                (double sliderVal) {
+              clrIntensity = sliderVal;
+            }),
+
+            //White intensity slider
+            ColorSlider(sliderHeight, getLowerWitInt(clrIntensity),
+                getUpperWitInt(clrIntensity), (double sliderVal) {
+              whiteIntensity = sliderVal;
+            }),
+
+            //Overall color intensity
+            ColorSlider(sliderHeight, Colors.grey,
+                getUpperAlgeheelInt(clrIntensity, whiteIntensity),
+                (double sliderVal) {
+              finalClrIntensity = sliderVal;
+            }),
+
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
@@ -308,7 +228,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 FloatingActionButton.extended(
                   label: Text('Aan'),
                   onPressed: () {
-                    setStrip(clr, witInt, totalInt.round());
+                    setStrip(clr, whiteIntensity, totalInt.round());
                   },
                   icon: Icon(Icons.lightbulb_outline),
                   backgroundColor: Colors.deepOrange.withAlpha(255),
