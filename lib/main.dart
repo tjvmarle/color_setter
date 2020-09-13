@@ -1,5 +1,3 @@
-// import 'dart:ffi';
-
 import 'package:flutter/material.dart';
 import 'package:./flutter_circle_color_picker/flutter_circle_color_picker.dart';
 import 'package:http/http.dart';
@@ -40,13 +38,13 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   Color clr;
-  double totalInt;
 
   final double sliderHeight = 36;
 
   double clrIntensity;
   double whiteIntensity;
   double finalClrIntensity;
+  double totalInt; //TODO: Deze nog omzetten naar finalClrIntensity
 
   @override
   void initState() {

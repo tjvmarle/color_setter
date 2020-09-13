@@ -62,7 +62,8 @@ class _SliderState extends State<ColorSlider> {
             overlayShape: RoundSliderOverlayShape(overlayRadius: 28.0),
           ),
           child: Slider(
-            label: "Kleur intensiteit",
+            label:
+                "Kleur intensiteit", //TODO: variable van maken/weggooien/text field van maken
             min: 0.0,
             max: 1.0,
             value: sliderValue,
