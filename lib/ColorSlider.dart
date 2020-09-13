@@ -30,6 +30,9 @@ class _SliderState extends State<ColorSlider> {
     return sliderValue;
   }
 
+  //TODO
+  //Text field toevoegen met de naam van de slider
+
   @override
   //Hier wordt de gehele widget gemaakt en teruggeven aan de bovenlaag
   Widget build(BuildContext context) {
