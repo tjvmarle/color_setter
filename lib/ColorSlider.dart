@@ -30,8 +30,7 @@ class _SliderState extends State<ColorSlider> {
     return sliderValue;
   }
 
-  //TODO
-  //Text field toevoegen met de naam van de slider
+  //TODO: Text field toevoegen met de naam van de slider
 
   @override
   //Hier wordt de gehele widget gemaakt en teruggeven aan de bovenlaag
@@ -67,9 +66,11 @@ class _SliderState extends State<ColorSlider> {
             min: 0.0,
             max: 1.0,
             value: sliderValue,
-            onChanged: (value) {
-              sliderValue = value;
-              widget.sliderCb(value);
+            onChanged: (double val) {
+              setState(() {
+                sliderValue = val;
+                widget.sliderCb(val);
+              });
             },
           ),
         ),

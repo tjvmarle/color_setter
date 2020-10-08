@@ -157,11 +157,9 @@ class _MyHomePageState extends State<MyHomePage> {
                 FloatingActionButton.extended(
                   label: Text('Aan'),
                   onPressed: () {
-                    setStrip(
-                        clr,
-                        whiteIntensity,
-                        totalInt
-                            .round()); //TODO: totalInt klopt niet. Aanpassen naar finalClrIntensity. setStrip updaten (val 0-100 wordt 0-1)
+                    setStrip(clr, whiteIntensity, totalInt.round());
+                    //TODO: totalInt klopt niet. Aanpassen naar finalClrIntensity. setStrip updaten (val 0-100 wordt 0-1)
+                    // Misschien is dit ook de reden dat de eerste en laatste sliders geen effect hebben op de verlichting
                   },
                   icon: Icon(Icons.lightbulb_outline),
                   backgroundColor: Colors.deepOrange.withAlpha(255),
@@ -176,7 +174,8 @@ class _MyHomePageState extends State<MyHomePage> {
 
   void setUit() {
     post(
-      'http://192.168.1.111/setlighting?targetStrip=both&r=0&g=0&b=0&w=10&intensity=0', //Blijkbaar blijven de zijkanten branden als alle kleurwaardes 0 zijn, dus w is nu 10.
+      //TODO: Maak aparte pagina om ip adres in te stellen
+      'http://192.168.1.101/setlighting?targetStrip=both&r=0&g=0&b=0&w=10&intensity=0', //Blijkbaar blijven de zijkanten branden als alle kleurwaardes 0 zijn, dus w is nu 10.
       headers: <String, String>{},
     );
   }
@@ -187,7 +186,7 @@ class _MyHomePageState extends State<MyHomePage> {
       int witWaarde = (255 * witIntensiteit).round().toInt();
 
       return post(
-        'http://192.168.1.111/setlighting?targetStrip=both&r=${rgb.red}&g=${rgb.green}&b=${rgb.blue}&w=${witWaarde}&intensity=${totaleIntensiteit}',
+        'http://192.168.1.101/setlighting?targetStrip=both&r=${rgb.red}&g=${rgb.green}&b=${rgb.blue}&w=$witWaarde&intensity=$totaleIntensiteit',
         headers: <String, String>{},
       );
     } catch (e) {
