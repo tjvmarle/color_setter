@@ -5,10 +5,12 @@ class ColorSlider extends StatefulWidget {
   final double sliderHeight;
   final Color lowerGradient;
   final Color upperGradient;
+  final double initVal;
+  final String name; //TODO: Implementeer een tekstlabel linksboven de slider
   final Function sliderCb;
 
-  ColorSlider(
-      this.sliderHeight, this.lowerGradient, this.upperGradient, this.sliderCb);
+  ColorSlider(this.sliderHeight, this.lowerGradient, this.upperGradient,
+      this.initVal, this.name, this.sliderCb);
 
   @override
   State<StatefulWidget> createState() {
@@ -22,15 +24,9 @@ class _SliderState extends State<ColorSlider> {
   _SliderState();
 
   void initState() {
-    sliderValue = 0.5;
+    sliderValue = widget.initVal;
     super.initState();
   }
-
-  double getVal() {
-    return sliderValue;
-  }
-
-  //TODO: Text field toevoegen met de naam van de slider
 
   @override
   //Hier wordt de gehele widget gemaakt en teruggeven aan de bovenlaag
@@ -61,8 +57,6 @@ class _SliderState extends State<ColorSlider> {
             overlayShape: RoundSliderOverlayShape(overlayRadius: 28.0),
           ),
           child: Slider(
-            label:
-                "Kleur intensiteit", //TODO: variable van maken/weggooien/text field van maken
             min: 0.0,
             max: 1.0,
             value: sliderValue,

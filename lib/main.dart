@@ -22,7 +22,7 @@ class MyApp extends StatelessWidget {
         // closer together (more dense) than on mobile platforms.
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
-      home: MyHomePage(title: 'Zet verlichting'),
+      home: MyHomePage(title: 'Enlightment'),
     );
   }
 }
@@ -37,21 +37,19 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  Color clr;
+  Color clrFromPicker;
 
   final double sliderHeight = 36;
 
   double clrIntensity;
   double whiteIntensity;
   double finalClrIntensity;
-  double totalInt; //TODO: Deze nog omzetten naar finalClrIntensity
 
   @override
   void initState() {
-    clr = Colors.orange; //Ring kleur
-    totalInt = 50; //Algehele intensiteit
+    clrFromPicker = Colors.deepOrange; //Ring kleur
 
-    clrIntensity = 0.5;
+    clrIntensity = 0.75;
     whiteIntensity = 0.5;
     finalClrIntensity = 1;
 
@@ -61,14 +59,14 @@ class _MyHomePageState extends State<MyHomePage> {
 
   void setColor(Color kleur) {
     setState(() {
-      clr = kleur;
+      clrFromPicker = kleur;
     });
   }
 
   Color getLowerWitInt(double intensity) {
-    double red = clr.red * intensity;
-    double green = clr.green * intensity;
-    double blue = clr.blue * intensity;
+    double red = clrFromPicker.red * intensity;
+    double green = clrFromPicker.green * intensity;
+    double blue = clrFromPicker.blue * intensity;
     return Color.fromRGBO(red.toInt(), green.toInt(), blue.toInt(), 1);
   }
 
@@ -80,9 +78,9 @@ class _MyHomePageState extends State<MyHomePage> {
   //kleurverzadigingen.
   Color getUpperWitInt(double intensity) {
     double fractInt = fract * intensity;
-    double red = 255 * (1 - fractInt) + fractInt * clr.red;
-    double green = 255 * (1 - fractInt) + fractInt * clr.green;
-    double blue = 255 * (1 - fractInt) + fractInt * clr.blue;
+    double red = 255 * (1 - fractInt) + fractInt * clrFromPicker.red;
+    double green = 255 * (1 - fractInt) + fractInt * clrFromPicker.green;
+    double blue = 255 * (1 - fractInt) + fractInt * clrFromPicker.blue;
     return Color.fromRGBO(red.toInt(), green.toInt(), blue.toInt(), 1);
   }
 
@@ -91,10 +89,12 @@ class _MyHomePageState extends State<MyHomePage> {
     double fractClrInt = 1 - (1 - fract) * witInt;
     double fractClrWit = 1 - fract * clrInt;
 
-    double red = clr.red * fractClrInt * clrInt + 255 * fractClrWit * witInt;
+    double red =
+        clrFromPicker.red * fractClrInt * clrInt + 255 * fractClrWit * witInt;
     double green =
-        clr.green * fractClrInt * clrInt + 255 * fractClrWit * witInt;
-    double blue = clr.blue * fractClrInt * clrInt + 255 * fractClrWit * witInt;
+        clrFromPicker.green * fractClrInt * clrInt + 255 * fractClrWit * witInt;
+    double blue =
+        clrFromPicker.blue * fractClrInt * clrInt + 255 * fractClrWit * witInt;
 
     return Color.fromRGBO(red.toInt(), green.toInt(), blue.toInt(), 1);
   }
@@ -125,22 +125,39 @@ class _MyHomePageState extends State<MyHomePage> {
             ),
 
             //Color intensity slider
-            ColorSlider(sliderHeight, clr.withOpacity(0), clr,
-                (double sliderVal) {
-              clrIntensity = sliderVal;
+            ColorSlider(
+                sliderHeight,
+                clrFromPicker.withOpacity(0),
+                clrFromPicker,
+                clrIntensity,
+                "Kleur intensiteit", (double sliderVal) {
+              setState(() {
+                clrIntensity = sliderVal;
+              });
             }),
 
             //White intensity slider
-            ColorSlider(sliderHeight, getLowerWitInt(clrIntensity),
-                getUpperWitInt(clrIntensity), (double sliderVal) {
-              whiteIntensity = sliderVal;
+            ColorSlider(
+                sliderHeight,
+                getLowerWitInt(clrIntensity),
+                getUpperWitInt(clrIntensity),
+                whiteIntensity,
+                "Wit intensiteit", (double sliderVal) {
+              setState(() {
+                whiteIntensity = sliderVal;
+              });
             }),
 
             //Overall color intensity
-            ColorSlider(sliderHeight, Colors.grey,
+            ColorSlider(
+                sliderHeight,
+                Colors.grey,
                 getUpperAlgeheelInt(clrIntensity, whiteIntensity),
-                (double sliderVal) {
-              finalClrIntensity = sliderVal;
+                finalClrIntensity,
+                "Algehele intensiteit", (double sliderVal) {
+              setState(() {
+                finalClrIntensity = sliderVal;
+              });
             }),
 
             Row(
@@ -157,9 +174,8 @@ class _MyHomePageState extends State<MyHomePage> {
                 FloatingActionButton.extended(
                   label: Text('Aan'),
                   onPressed: () {
-                    setStrip(clr, whiteIntensity, totalInt.round());
-                    //TODO: totalInt klopt niet. Aanpassen naar finalClrIntensity. setStrip updaten (val 0-100 wordt 0-1)
-                    // Misschien is dit ook de reden dat de eerste en laatste sliders geen effect hebben op de verlichting
+                    setStrip(clrFromPicker, clrIntensity, whiteIntensity,
+                        finalClrIntensity);
                   },
                   icon: Icon(Icons.lightbulb_outline),
                   backgroundColor: Colors.deepOrange.withAlpha(255),
@@ -175,18 +191,26 @@ class _MyHomePageState extends State<MyHomePage> {
   void setUit() {
     post(
       //TODO: Maak aparte pagina om ip adres in te stellen
-      'http://192.168.1.101/setlighting?targetStrip=both&r=0&g=0&b=0&w=10&intensity=0', //Blijkbaar blijven de zijkanten branden als alle kleurwaardes 0 zijn, dus w is nu 10.
+      'http://192.168.1.103/setlighting?targetStrip=both&r=0&g=0&b=0&w=10&intensity=0', //Blijkbaar blijven de zijkanten branden als alle kleurwaardes 0 zijn, dus w is nu 10.
       headers: <String, String>{},
     );
   }
 
-  Future<Response> setStrip(
-      Color rgb, double witIntensiteit, int totaleIntensiteit) {
+  Future<Response> setStrip(Color rgb, double kleurIntensiteit,
+      double witIntensiteit, double totaleIntensiteit) {
     try {
+      //totaleIntensiteit wordt op de microcontroller gecorrigeerd, dus hier niet nodig.
       int witWaarde = (255 * witIntensiteit).round().toInt();
+      int red = (rgb.red * kleurIntensiteit).toInt();
+      int green = (rgb.green * kleurIntensiteit).toInt();
+      int blue = (rgb.blue * kleurIntensiteit).toInt();
+
+      Color stripColor =
+          Color.fromRGBO(red.toInt(), green.toInt(), blue.toInt(), 1);
+      int stripIntensiteit = (totaleIntensiteit * 100).toInt();
 
       return post(
-        'http://192.168.1.101/setlighting?targetStrip=both&r=${rgb.red}&g=${rgb.green}&b=${rgb.blue}&w=$witWaarde&intensity=$totaleIntensiteit',
+        'http://192.168.1.103/setlighting?targetStrip=both&r=${stripColor.red}&g=${stripColor.green}&b=${stripColor.blue}&w=$witWaarde&intensity=$stripIntensiteit',
         headers: <String, String>{},
       );
     } catch (e) {
