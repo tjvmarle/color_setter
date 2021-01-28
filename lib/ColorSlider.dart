@@ -31,44 +31,56 @@ class _SliderState extends State<ColorSlider> {
   @override
   //Hier wordt de gehele widget gemaakt en teruggeven aan de bovenlaag
   Widget build(BuildContext context) {
-    return FractionallySizedBox(
-      widthFactor: 0.9,
-      child: Container(
-        constraints: BoxConstraints.expand(
-          height: widget.sliderHeight,
-        ),
-        decoration: new BoxDecoration(
-          borderRadius:
-              new BorderRadius.all(Radius.circular(widget.sliderHeight / 2)),
-          gradient: LinearGradient(
-              colors: [widget.lowerGradient, widget.upperGradient]),
-          border: Border.all(
-            width: 2,
-            color: Colors.black.withOpacity(0.5),
-          ),
-        ),
-        child: SliderTheme(
-          data: SliderThemeData(
-            activeTrackColor: Colors.grey[400],
-            inactiveTrackColor: Colors.grey[400],
-            trackHeight: 4.0,
-            thumbColor: Colors.grey[700],
-            thumbShape: RoundSliderThumbShape(enabledThumbRadius: 12.0),
-            overlayShape: RoundSliderOverlayShape(overlayRadius: 28.0),
-          ),
-          child: Slider(
-            min: 0.0,
-            max: 1.0,
-            value: sliderValue,
-            onChanged: (double val) {
-              setState(() {
-                sliderValue = val;
-                widget.sliderCb(val);
-              });
-            },
-          ),
-        ),
-      ),
-    );
+    return Column(children: [
+      FractionallySizedBox(
+          widthFactor: 0.9,
+          child: Column(children: [
+            SizedBox(
+              width: double.infinity,
+              child: Text(
+                widget.name,
+                textAlign: TextAlign.left,
+                style: TextStyle(fontWeight: FontWeight.bold),
+                // ),
+              ),
+            ),
+            Container(
+              constraints: BoxConstraints.expand(
+                height: widget.sliderHeight,
+              ),
+              decoration: new BoxDecoration(
+                borderRadius: new BorderRadius.all(
+                    Radius.circular(widget.sliderHeight / 2)),
+                gradient: LinearGradient(
+                    colors: [widget.lowerGradient, widget.upperGradient]),
+                border: Border.all(
+                  width: 2,
+                  color: Colors.black.withOpacity(0.5),
+                ),
+              ),
+              child: SliderTheme(
+                data: SliderThemeData(
+                  activeTrackColor: Colors.grey[400],
+                  inactiveTrackColor: Colors.grey[400],
+                  trackHeight: 4.0,
+                  thumbColor: Colors.grey[700],
+                  thumbShape: RoundSliderThumbShape(enabledThumbRadius: 12.0),
+                  overlayShape: RoundSliderOverlayShape(overlayRadius: 28.0),
+                ),
+                child: Slider(
+                  min: 0.0,
+                  max: 1.0,
+                  value: sliderValue,
+                  onChanged: (double val) {
+                    setState(() {
+                      sliderValue = val;
+                      widget.sliderCb(val);
+                    });
+                  },
+                ),
+              ),
+            ),
+          ]))
+    ]);
   }
 }

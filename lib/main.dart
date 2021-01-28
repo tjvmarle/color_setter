@@ -114,78 +114,73 @@ class _MyHomePageState extends State<MyHomePage> {
         title: Text(widget.title),
         centerTitle: true,
       ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: [
-            CircleColorPicker(
-              initialColor: Colors.orange,
-              onChanged: setColor,
-              strokeWidth: 5,
-            ),
+      body: Column(
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        children: [
+          CircleColorPicker(
+            initialColor: Colors.orange,
+            onChanged: setColor,
+            strokeWidth: 5,
+          ),
 
-            //Color intensity slider
-            ColorSlider(
-                sliderHeight,
-                clrFromPicker.withOpacity(0),
-                clrFromPicker,
-                clrIntensity,
-                "Kleur intensiteit", (double sliderVal) {
-              setState(() {
-                clrIntensity = sliderVal;
-              });
-            }),
+          //Color intensity slider
+          ColorSlider(sliderHeight, clrFromPicker.withOpacity(0), clrFromPicker,
+              clrIntensity, "Kleur intensiteit", (double sliderVal) {
+            setState(() {
+              clrIntensity = sliderVal;
+            });
+          }),
 
-            //White intensity slider
-            ColorSlider(
-                sliderHeight,
-                getLowerWitInt(clrIntensity),
-                getUpperWitInt(clrIntensity),
-                whiteIntensity,
-                "Wit intensiteit", (double sliderVal) {
-              setState(() {
-                whiteIntensity = sliderVal;
-              });
-            }),
+          //White intensity slider
+          ColorSlider(
+              sliderHeight,
+              getLowerWitInt(clrIntensity),
+              getUpperWitInt(clrIntensity),
+              whiteIntensity,
+              "Wit intensiteit", (double sliderVal) {
+            setState(() {
+              whiteIntensity = sliderVal;
+            });
+          }),
 
-            //Overall color intensity
-            ColorSlider(
-                sliderHeight,
-                Colors.grey,
-                getUpperAlgeheelInt(clrIntensity, whiteIntensity),
-                finalClrIntensity,
-                "Algehele intensiteit", (double sliderVal) {
-              setState(() {
-                finalClrIntensity = sliderVal;
-              });
-            }),
+          //Overall color intensity
+          ColorSlider(
+              sliderHeight,
+              Colors.grey,
+              getUpperAlgeheelInt(clrIntensity, whiteIntensity),
+              finalClrIntensity,
+              "Algehele intensiteit", (double sliderVal) {
+            setState(() {
+              finalClrIntensity = sliderVal;
+            });
+          }),
 
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                FloatingActionButton.extended(
-                  label: Text('Uit'),
-                  onPressed: () {
-                    setUit();
-                  },
-                  icon: Icon(Icons.lightbulb_outline),
-                  backgroundColor: Colors.black54,
-                ),
-                FloatingActionButton.extended(
-                  label: Text('Aan'),
-                  onPressed: () {
-                    setStrip(clrFromPicker, clrIntensity, whiteIntensity,
-                        finalClrIntensity);
-                  },
-                  icon: Icon(Icons.lightbulb_outline),
-                  backgroundColor: Colors.deepOrange.withAlpha(255),
-                ),
-              ],
-            )
-          ],
-        ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              FloatingActionButton.extended(
+                label: Text('Uit'),
+                onPressed: () {
+                  setUit();
+                },
+                icon: Icon(Icons.lightbulb_outline),
+                backgroundColor: Colors.black54,
+              ),
+              FloatingActionButton.extended(
+                label: Text('Aan'),
+                onPressed: () {
+                  setStrip(clrFromPicker, clrIntensity, whiteIntensity,
+                      finalClrIntensity);
+                },
+                icon: Icon(Icons.lightbulb_outline),
+                backgroundColor: Colors.deepOrange.withAlpha(255),
+              ),
+            ],
+          )
+        ],
       ),
     );
+    // );
   }
 
   void setUit() {
